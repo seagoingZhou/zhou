@@ -1,0 +1,53 @@
+\documentclass[UTF8,a4paper]{ctexart}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\setlength{\parindent}{2em}
+\begin{document}
+	\title{YCSB:Core workload package properties}
+	\date{}
+	\maketitle
+	
+	\section{workload}
+	\begin{itemize}
+		\item Proportions 
+		\begin{itemize}
+			\small\item[-] readproportion; updateproportion; insertproportion; readmodifywriteproportion; scanproportion
+		\end{itemize}
+		
+		\item Distributions
+		\begin{itemize}
+			\small\item[-] length of a field(fieldlengthdistribution): uniform; zipfian; constant
+			\small\item[-] the number of records to access on a scan(the number of records to access on a scan): uniform; zipfian
+			\small\item[-] requests across the keyspace(requestdistribution): uniform; zipfian; latest
+		\end{itemize}
+		
+	
+	\end{itemize}
+	
+	\section{ts\_workload}
+	\begin{itemize}
+		\item Timestamp
+		\begin{itemize}
+			\small\item[-] timestampunits; timestampinterval
+		\end{itemize}
+		
+		\item Series order
+		\begin{itemize}
+			\small\item[-] randomize the timestamp order when performing inserts and updates against a DB: randomwritetimestamporder
+			\small\item[-] randomly shuffle the time series order when writing: randomtimeseriesorder 
+			\small\item[-] time series sparsity: sparsity 
+			\small\item[-] "lagging" time series percentage:delayedSeries
+			\small\item[-] maximum amount of delay(in interval counts): delayedIntervals
+		\end{itemize}
+	
+			\item Querytime
+		\begin{itemize}
+			\small\item[-] querytimespan; queryrandomtimespan; querytimespandelimiter
+		\end{itemize}
+	
+	\end{itemize}
+		
+	
+
+	
+\end{document}
