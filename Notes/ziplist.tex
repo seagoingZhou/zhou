@@ -1,0 +1,85 @@
+\documentclass[UTF8,a4paper]{ctexart}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage{multirow}
+
+\setlength{\parindent}{2em}
+\usepackage{listings}
+\usepackage{xcolor}
+\begin{document}
+	\title{Ziplist}
+	\date{}
+	\maketitle
+	
+	
+	\section{Overall Layout}
+		\begin{table}[!hbp]
+		
+		\caption{压缩列表的构成}
+		\begin{tabular}{|c|c|c|c|c|c|c|c|}
+			\hline
+				zlbytes & zltail & zllen & entry1 & entry2 & ... & entryN & zlend \\
+			\hline
+				uint32\_t & uint32\_t & uint16\_t & & & & & uint8\_t \\
+			\hline
+		\end{tabular}
+
+		\begin{center}
+		\caption{压缩列表节点的构成}
+		\begin{tabular}{|c|c|c|}
+			\hline
+			PrevEntryLength & encoding & content  \\
+			\hline		
+		\end{tabular}	
+		\end{center}
+	
+		\end{table}
+	
+	\par 注意：ziplist存储于一段连续的内存空间，ziplist和ziplistEntry并未定义结构体
+	
+	\section{Details of code}
+	
+	ziplist源代码中定义了结构体zlentry：
+	\definecolor{mygreen}{rgb}{0,0.6,0}
+	\definecolor{mygray}{rgb}{0.5,0.5,0.5}
+	\definecolor{mymauve}{rgb}{0.58,0,0.82}
+	\lstset{ %
+		backgroundcolor=\color{white},      % choose the background color
+		basicstyle=\footnotesize\ttfamily,  % size of fonts used for the code
+		columns=fullflexible,
+		tabsize=4,
+		breaklines=true,               % automatic line breaking only at whitespace
+		captionpos=b,                  % sets the caption-position to bottom
+		commentstyle=\color{mygreen},  % comment style
+		escapeinside={\%*}{*)},        % if you want to add LaTeX within your code
+		keywordstyle=\color{blue},     % keyword style
+		stringstyle=\color{mymauve}\ttfamily,  % string literal style
+		frame=single,
+		rulesepcolor=\color{red!20!green!20!blue!20},
+		% identifierstyle=\color{red},
+		language=c++,
+	}
+	\begin{lstlisting}[language={[ANSI]C},numbers=left]
+	typedef struct zlentry {
+		unsigned int prevrawlensize; 
+		unsigned int prevrawlen;    
+		unsigned int lensize;        
+		unsigned int len;            
+		unsigned int headersize;     
+		unsigned char encoding;
+		unsigned char *p;            
+	} zlentry;
+	\end{lstlisting}
+	这个结构体并不是entry节点的实际组织形式，而只是为了用于接收entry节点的信息，简化ziplist的操作
+	
+	\begin{itemize}
+		\small\item[-] prevrawlensize: 编码前一个entry长度所需字节数
+		\small\item[-] prevrawlen: 前一个entry长度
+		\small\item[-] lensize: 编码entry长度所需字节数
+		\small\item[-] headersize：头部长度
+		\small\item[-] *p: 指向entry最前面的指针，即指向PrevEntryLength区域的指针
+	\end{itemize}
+
+
+	
+\end{document}
