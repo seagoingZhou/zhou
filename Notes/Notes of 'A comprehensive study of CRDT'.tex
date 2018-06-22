@@ -1,0 +1,59 @@
+\documentclass[UTF8,a4paper]{ctexart}
+\usepackage{amsmath}
+\usepackage{indentfirst}
+\usepackage{microtype}
+
+
+\begin{document}
+	
+	\noindent Update operations
+	\begin{itemize}
+		\small\item[-] 	at source: some initial processing
+		\small\item[-]  downstream: transmit updates asynchronously to all replicas
+	\end{itemize}
+	
+	\noindent State-based replication 
+	
+	在state-based replication中，update操作仅仅在source源发生，而后，通过在各replicas之间传输更新后的payload，达到传递updates的目的.
+	
+	为了传递updates，系统在任意对replicas之间传输状态state，其接收方通过merge操作更新自己的payload.\\
+	
+	\noindent Op-based objects
+	
+	在op-based replication中，系统传递的是操作operations. 其update操作分为两个阶段：第一阶段(at source)，在本地计算结果，并返回给caller，and/or 为第二阶段准备参数；第二阶段(downstream)，在其他所有的replicas出异步地更新downstream状态，并不会返回结果.\\
+	
+	\noindent Causal Hostory of a replica $x_i$ (marked $ \mathcal{C} \left( x_i \right)  $)
+	\begin{itemize}
+		\small\item[-] 	初始化: $ \mathcal{C} \left( x_i \right) = \emptyset $ 
+		\small\item[-]  downstream阶段在$x_i$上执行 \emph{f} 操作（marked $ f\left(x_i\right) $）后，$ \mathcal{C} \left( f\left( x_i \right) \right) = \mathcal{C} \left( x_i \right) \cup \{f\} $
+	\end{itemize}
+
+	\noindent Eventually Convergence (object $x$的两份replicas $ x_i $和$ x_j $)
+	\begin{itemize}
+		\small\item[-] 	safety: 对于任意\emph{i}和\emph{j}，$x_i$和$x_j$的abstract state等价，即$\mathcal{C} \left( x_i \right)=\mathcal{C} \left( x_j \right)$
+		\small\item[-]  liveness：对于任意\emph{i}和\emph{j}，$f \in \mathcal{C} \left( x_i \right) \Longrightarrow f \in \mathcal{C} \left( x_j \right)$ eventually
+	\end{itemize}
+
+	\noindent CvRDT
+	
+	CvRDTs (Convergent Replicated Data Types) are state-based which means that every instance keeps the full history of all changes that have ever happened to the datastructure and is therefore self-contained and fault-tolerant by design. The convergent nature of the CvRDTs means that state updates do not need to obey any ordering requirements, the only requirement is that all state changes eventually reaches all replicas, and the system will converge.
+	
+	\noindent Some definitions
+	\begin{itemize}
+		\small\item[-] 	partial order $\le_v$
+		\small\item[-]  least upper bound (LUB) $\sqcup_v$,$\sqcup_v$ 满足交换律、幂等律和结合律
+		\small\item[-] Join Semilattice ($S,\le_v$)
+	\end{itemize}
+	 CvRDT form a \emph{monotomic semilattice}
+	 
+	\noindent CmRDT
+	
+	CmRDT (Commutative Replicated Data Types) are operations-based which means that it is the state changing events, and not the state changes themselves that are stored. These events are persisted in an event/transaction log and a CmRDT is brought up to its current state by simply replaying the event log. This solves the problem with unbound growth of history, as seen in CvRDTs, since the history is kept in a event log, outside the CmRDT. It also opens up for optimisations like sharding.
+	
+	对于op-based object，不遵循delivery order的操作被称为\emph{concurrent}，如果所有的concurrent operation可交换的话，则对应于delivery order的execution order相互等价，从而所有的replicas聚合于同一state 
+	
+	
+	
+	
+	
+\end{document}
